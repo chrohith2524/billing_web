@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Billing App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav>
+    <a href="{{ url_for('create_invoice') }}">Create Invoice</a> |
+    <a href="{{ url_for('add_product') }}">Add Product</a> |
+    <a href="{{ url_for('stock') }}">Stock</a> |
+    <a href="{{ url_for('logout') }}">Logout</a>
+</nav>
+
+<hr>
+
+{% block content %}
+{% endblock %}
+
+</body>
+</html>

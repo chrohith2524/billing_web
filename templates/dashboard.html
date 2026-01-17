@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+</head>
+<body>
+
+<div class="container">
+
+<div class="navbar">
+    <div class="nav-left">
+        <a href="/">Dashboard</a>
+        <a href="/create_invoice">Create Invoice</a>
+        <a href="/stock">Stock</a>
+        <a href="/add-product">Add Product</a>
+        <a href="/update-stock">Add Stock</a>
+    </div>
+    <span class="toggle" onclick="toggleTheme()">🌙 / ☀️</span>
+</div>
+
+<h2>Invoice History</h2>
+
+<table>
+<tr>
+    <th>Invoice No</th>
+    <th>Date</th>
+    <th>Customer</th>
+    <th>Total</th>
+    <th>PDF</th>
+</tr>
+
+{% for i in invoices %}
+<tr>
+    <td>{{ i.invoice_no }}</td>
+    <td>{{ i.invoice_date }}</td>
+    <td>{{ i.customer_name }}</td>
+    <td>{{ i.total }}</td>
+    <td><a href="/download/{{ i.pdf_file }}">Download</a></td>
+</tr>
+{% endfor %}
+</table>
+
+</div>
+</body>
+</html>

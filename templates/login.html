@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="
+    width: 300px;
+    margin: 120px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background: white;
+">
+    <h2>Login</h2>
+
+    {% if error %}
+        <p style="color:red">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <input type="text" name="username" placeholder="Username" required><br><br>
+        <input type="password" name="password" placeholder="Password" required><br><br>
+        <button type="submit">Login</button>
+    </form>
+</div>
+{% endblock %}

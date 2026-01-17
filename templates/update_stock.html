@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Stock</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+
+</head>
+<body>
+
+<div class="container">
+    <div class="navbar">
+    <div class="nav-left">
+        <a href="/">Dashboard</a>
+        <a href="/create_invoice">Create Invoice</a>
+        <a href="/stock">Stock</a>
+        <a href="/add-product">Add Product</a>
+        <a href="/update-stock">Add Stock</a>
+    </div>
+
+    <span class="toggle" onclick="toggleTheme()">🌙 / ☀️</span>
+</div>
+
+<h2>Add / Update Stock</h2>
+
+<form method="post" class="grid-4">
+<select name="product_id">
+{% for p in products %}
+<option value="{{ p.id }}">{{ p.name }} ({{ p.stock }})</option>
+{% endfor %}
+</select>
+
+<input type="number" step="0.01" name="add_qty" placeholder="Quantity">
+<button type="submit">Update Stock</button>
+</form>
+
+</div>
+</body>
+</html>

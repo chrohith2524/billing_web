@@ -1,0 +1,132 @@
+:root {
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e2e8f0;
+    --primary: #2563eb;
+}
+
+[data-theme="dark"] {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+    --border: #334155;
+    --primary: #3b82f6;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 30px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    background: var(--card);
+    padding: 30px 40px;
+    border-radius: 14px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.nav-left a {
+    margin-right: 20px;
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.nav-left a:hover {
+    color: var(--primary);
+}
+
+.toggle {
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* ===== HEADINGS ===== */
+h2 { margin-top: 0; }
+
+.section {
+    margin-top: 30px;
+}
+
+.section-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+}
+
+/* ===== GRID ===== */
+.grid-6 { display: grid; grid-template-columns: repeat(6,1fr); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+
+/* ===== INPUTS ===== */
+input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* ===== TABLE ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+th, td {
+    border: 1px solid var(--border);
+    padding: 10px;
+    text-align: center;
+}
+
+th { background: rgba(0,0,0,0.04); }
+
+/* ===== BUTTON ===== */
+button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 26px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+/* Move Generate Invoice button slightly down */
+.generate-btn {
+    margin-top: 24px;
+}
+@media print {
+    .no-print {
+        display: none !important;
+        visibility: hidden !important
+    }
+}
+

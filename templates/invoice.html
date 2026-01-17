@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tax Invoice</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+   <script src="{{ url_for('static', filename='theme.js') }}"></script>
+
+    <style>
+        body { font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 6px; vertical-align: top; }
+        th { text-align: center; }
+        .no-border td { border: none; }
+        .center { text-align: center; }
+        .right { text-align: right; }
+        .bold { font-weight: bold; }
+        .small { font-size: 13px; }
+        .mt { margin-top: 10px; }
+    </style>
+</head>
+
+<body>
+
+<div class="right small">Original For Recipient</div>
+
+<!-- ================= HEADER ================= -->
+<div class="center">
+    <h2>VAMSIKRISHNA ENTERPRISES</h2>
+    <p class="small">
+        PLOT NO 8 & 9, M/s. SREENIDHI ESTATES INDIA PVT LTD,<br>
+        SUNCITY LAYOUT, RAJUPALEM, OZILI (M)<br>
+        Tirupathi, Andhra Pradesh – 524402, India<br>
+        Phone No: 7013326773, 7981439942, 9493205227 |
+        Email: vamsikrishnaenterprises227@gmail.com<br>
+        GSTIN No: 37AXJPC4409P1Z4 &nbsp;&nbsp; PAN No: AXJPC4409P
+    </p>
+    <h3>TAX INVOICE</h3>
+</div>
+
+<!-- ================= INVOICE DETAILS ================= -->
+<table class="mt">
+<tr>
+<td width="50%">
+    <b>Invoice No :</b> {{ invoice_no }}<br>
+    <b>Payment Term :</b> {{ payment_term }}<br>
+    <b>Place of Supply :</b> {{ place_of_supply }}
+</td>
+<td width="50%">
+    <b>Invoice Date :</b> {{ invoice_date }}<br>
+    <b>Invoice Time :</b> {{ invoice_time }}
+    <b>Vehicle No :</b> {{ vehicle_no }}<br>
+    <b>Bill Type :</b> {{ bill_type }}
+</td>
+</tr>
+</table>
+
+<!-- ================= CUSTOMER ================= -->
+<table class="mt">
+<tr>
+<th width="50%">Customer Name & Billing Address</th>
+<th width="50%">Shipping Address</th>
+</tr>
+<tr>
+<td>
+    <b>{{ customer_name }}</b><br>
+    {{ address }}<br>
+    Phone : {{ phone }}<br>
+    State Code : {{ state_code }}<br>
+    Party Contact Person : {{ party_contact }}
+</td>
+<td>
+    <b>{{ shipping_name or customer_name }}</b><br>
+    {{ shipping_address or address }}<br>
+    Phone : {{ shipping_phone or phone }}<br>
+    State Code : {{ shipping_state or state_code }}
+</td>
+
+
+</tr>
+</table>
+
+<!-- ================= ITEMS ================= -->
+<table class="mt">
+<tr>
+<th>S.No</th>
+<th>Code</th>
+<th>Product Name</th>
+<th>HSN</th>
+<th>UOM</th>
+<th>Qty</th>
+<th>Rate</th>
+<th>Amount</th>
+</tr>
+
+{% for i in items %}
+<tr>
+<td class="center">{{ loop.index }}</td>
+<td class="center">{{ i.hsn }}</td>
+<td>
+    {{ i.name }}<br>
+    <span class="small">600 X 1200</span>
+</td>
+<td class="center">{{ i.hsn }}</td>
+<td class="center">{{ i.uom }}</td>
+<td class="center">{{ i.qty }}</td>
+<td class="center">{{ "%.2f"|format(i.rate) }}</td>
+<td class="center">{{ "%.2f"|format(i.amount) }}</td>
+</tr>
+{% endfor %}
+</table>
+
+<!-- ================= TAX SUMMARY ================= -->
+<table class="mt">
+<tr>
+<th>Gross Value</th>
+<th>CGST</th>
+<th>SGST</th>
+<th>IGST</th>
+<th>Total</th>
+</tr>
+<tr class="center">
+<td>{{ "%.2f"|format(Gross) }}</td>
+<td>{{ "%.2f"|format(cgst) }}</td>
+<td>{{ "%.2f"|format(sgst) }}</td>
+<td>{{ "%.2f"|format(igst) }}</td>
+<td>{{ "%.2f"|format(total) }}</td>
+</tr>
+</table>
+
+<p class="mt"><b>Amount in Words:</b> {{ amount_words }}</p>
+
+<br><br>
+
+<div class="right">
+    For <b>VAMSIKRISHNA ENTERPRISES</b><br><br><br>
+    <b>Authorised Signatory</b>
+</div>
+
+<br>
+<div class="no-print">
+    <button onclick="window.print()">Print Invoice</button>
+    <a href="/download/{{ pdf_file }}">Download PDF</a>
+</div>
+
+
+
+</body>
+</html>

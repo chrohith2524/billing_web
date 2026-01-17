@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+
+</head>
+<body>
+
+<div class="container">
+    <div class="navbar">
+    <div class="nav-left">
+        <a href="/">Dashboard</a>
+        <a href="/create_invoice">Create Invoice</a>
+        <a href="/stock">Stock</a>
+        <a href="/add-product">Add Product</a>
+        <a href="/update-stock">Add Stock</a>
+    </div>
+
+    <span class="toggle" onclick="toggleTheme()">🌙 / ☀️</span>
+</div>
+
+<h2>Stock</h2>
+
+<table>
+<tr>
+<th>Code</th><th>Product</th><th>HSN</th><th>Unit</th><th>Rate</th><th>Stock</th>
+</tr>
+
+{% for p in products %}
+<tr>
+<td>{{ p.code }}</td>
+<td>{{ p.name }}</td>
+<td>{{ p.hsn }}</td>
+<td>{{ p.uom }}</td>
+<td>{{ p.rate }}</td>
+<td>{{ p.stock }}</td>
+</tr>
+{% endfor %}
+</table>
+
+<div class="links">
+    <a href="/update-stock">Add Stock</a>
+    <a href="/create_invoice">Create Invoice</a>
+</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Invoice</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+
+    <!-- ✅ Shipping copy logic -->
+    <script>
+        function copyBillingToShipping(cb) {
+            const map = [
+                ["billing_name", "shipping_name"],
+                ["billing_address", "shipping_address"],
+                ["billing_phone", "shipping_phone"],
+                ["billing_state", "shipping_state"]
+            ];
+
+            map.forEach(([b, s]) => {
+                const bEl = document.getElementById(b);
+                const sEl = document.getElementById(s);
+
+                if (cb.checked) {
+                    sEl.value = bEl.value;
+                    sEl.readOnly = true;
+                } else {
+                    sEl.value = "";
+                    sEl.readOnly = false;
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+<div class="container">
+
+<!-- ✅ NAVBAR -->
+<div class="navbar">
+    <div class="nav-left">
+        <a href="/">Dashboard</a>
+        <a href="/create_invoice">Create Invoice</a>
+        <a href="/stock">Stock</a>
+        <a href="/add-product">Add Product</a>
+        <a href="/update-stock">Add Stock</a>
+    </div>
+    <span class="toggle" onclick="toggleTheme()">🌙 / ☀️</span>
+</div>
+
+<h2>Create Invoice</h2>
+
+<form method="post">
+
+<!-- ================= INVOICE DETAILS ================= -->
+<div class="section">
+    <div class="section-title">Invoice Details</div>
+    <div class="grid-6">
+        <input name="invoice_no" placeholder="Invoice No" required>
+        <input type="date" name="invoice_date" value="{{ today }}">
+        <input name="payment_term" placeholder="Payment Term">
+        <input name="place_of_supply" placeholder="Place of Supply">
+        <input name="vehicle_no" placeholder="Vehicle No">
+        <input name="bill_type" placeholder="Bill Type">
+    </div>
+</div>
+
+<!-- ================= BILLING DETAILS ================= -->
+<div class="section">
+    <div class="section-title">Customer & Billing Address</div>
+    <div class="grid-4">
+        <input id="billing_name" name="customer_name" placeholder="Customer Name">
+
+        <textarea id="billing_address"
+                  name="billing_address"
+                  placeholder="Billing Address"></textarea>
+
+        <input id="billing_phone" name="phone" placeholder="Phone">
+        <input id="billing_state" name="state_code" placeholder="State Code">
+        <input name="party_contact" placeholder="Contact Person">
+    </div>
+</div>
+
+<!-- ================= SHIPPING DETAILS ================= -->
+<div class="section">
+    <div class="section-title">Shipping Address</div>
+
+    <label>
+        <input type="checkbox" onchange="copyBillingToShipping(this)">
+        Shipping address same as billing address
+    </label>
+
+    <div class="grid-4" style="margin-top: 12px;">
+        <input id="shipping_name" name="shipping_name" placeholder="Shipping Name">
+
+        <textarea id="shipping_address"
+                  name="shipping_address"
+                  placeholder="Shipping Address"></textarea>
+
+        <input id="shipping_phone" name="shipping_phone" placeholder="Phone">
+        <input id="shipping_state" name="shipping_state" placeholder="State Code">
+    </div>
+</div>
+
+<!-- ================= PRODUCTS ================= -->
+<div class="section">
+    <div class="section-title">Products</div>
+
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Rate</th>
+            <th>Available Stock</th>
+            <th>Quantity</th>
+        </tr>
+
+        {% for p in products %}
+        <tr>
+            <td>{{ p.name }}</td>
+            <td>{{ p.rate }}</td>
+            <td>{{ p.stock }}</td>
+            <td>
+                <input type="number"
+                       step="0.01"
+                       min="0"
+                       max="{{ p.stock }}"
+                       name="qty_{{ p.id }}">
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <button type="submit" class="generate-btn">Generate Invoice</button>
+</div>
+
+</form>
+
+</div>
+</body>
+</html>
