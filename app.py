@@ -12,6 +12,7 @@ import sqlite3
 import os
 
 from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 from num2words import num2words
 from weasyprint import HTML
@@ -120,7 +121,7 @@ def init_db():
     conn.execute("""
     CREATE TABLE IF NOT EXISTS invoices (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        invoice_no TEXT,
+        invoice_no TEXT UNIQUE,
         invoice_date TEXT,
         customer_name TEXT,
         total REAL,
@@ -190,7 +191,9 @@ def generate_invoice_number():
 
     next_id = 1 if not last else last["id"] + 1
 
-    year = datetime.now().year
+    year = datetime.now(
+        ZoneInfo("Asia/Kolkata")
+    ).year
 
     return f"VK-{year}-{next_id:04d}"
 
@@ -286,7 +289,7 @@ def home():
         """
         SELECT *
         FROM invoices
-        ORDER BY invoice_date DESC
+        ORDER BY id DESC
         """
     ).fetchall()
 
@@ -429,11 +432,34 @@ def create_invoice():
 
         d = request.form
 
+        # ===== DUPLICATE INVOICE CHECK =====
+
+        existing = conn.execute(
+            """
+            SELECT *
+            FROM invoices
+            WHERE invoice_no = ?
+            """,
+            (d["invoice_no"],)
+        ).fetchone()
+
+        if existing:
+
+            conn.close()
+
+            return "Invoice number already exists."
+
         items = []
 
         subtotal = 0.0
 
-        invoice_time = datetime.now().strftime("%H:%M:%S")
+        invoice_time = datetime.now(
+            ZoneInfo("Asia/Kolkata")
+        ).strftime("%I:%M %p")
+
+        invoice_date = datetime.now(
+            ZoneInfo("Asia/Kolkata")
+        ).strftime("%d-%m-%Y")
 
         # ===== PRODUCTS =====
 
@@ -481,6 +507,14 @@ def create_invoice():
                     (qty, p["id"])
                 )
 
+        # ===== PREVENT EMPTY INVOICE =====
+
+        if not items:
+
+            conn.close()
+
+            return "Please add at least one product quantity."
+
         # ===== GST =====
 
         Gross = subtotal / 1.18
@@ -503,7 +537,7 @@ def create_invoice():
 
             igst = gst
 
-        # ===== WORDS =====
+        # ===== AMOUNT IN WORDS =====
 
         amount_words = (
             num2words(
@@ -511,11 +545,14 @@ def create_invoice():
                 lang="en_IN"
             ).title()
             + " Only"
-)
+        )
 
         # ===== PDF =====
 
-        pdf_name = f"{d['invoice_no']}.pdf"
+        pdf_name = (
+            f"{d['invoice_no']}_"
+            f"{int(datetime.now().timestamp())}.pdf"
+        )
 
         pdf_path = os.path.join(
             PDF_DIR,
@@ -528,7 +565,7 @@ def create_invoice():
 
             invoice_no=d["invoice_no"],
 
-            invoice_date=d["invoice_date"],
+            invoice_date=invoice_date,
 
             invoice_time=invoice_time,
 
@@ -593,7 +630,7 @@ def create_invoice():
 
             d["invoice_no"],
 
-            d["invoice_date"],
+            invoice_date,
 
             d["customer_name"],
 
@@ -661,16 +698,14 @@ def create_invoice():
     )
 
 
-# ================= DOWNLOAD PDF =================
+# ================= DATABASE BACKUP =================
 
-@app.route("/download/<filename>")
-@login_required()
-def download_invoice(filename):
+@app.route("/backup-db")
+@login_required(role="admin")
+def backup_db():
 
     return send_file(
-
-        os.path.join(PDF_DIR, filename),
-
+        DB,
         as_attachment=True
     )
 

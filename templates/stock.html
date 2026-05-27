@@ -35,14 +35,21 @@
 <td>{{ p.hsn }}</td>
 <td>{{ p.uom }}</td>
 <td>{{ p.rate }}</td>
-<td>{{ p.stock }}</td>
+<td class="{% if p.stock < 10 %}low-stock{% endif %}">
+    {{ p.stock }}
+</td>
 </tr>
 {% endfor %}
 </table>
 
 <div class="links">
-    <a href="/update-stock">Add Stock</a>
-    <a href="/create_invoice">Create Invoice</a>
+    <a href="/update-stock" class="link-btn">
+        Add Stock
+    </a>
+
+    <a href="/create_invoice" class="link-btn">
+        Create Invoice
+    </a>
 </div>
 </div>
 

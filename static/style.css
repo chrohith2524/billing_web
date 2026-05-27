@@ -129,4 +129,27 @@ button {
         visibility: hidden !important
     }
 }
+.links{
+    margin-top: 20px;
+    display: flex;
+    gap: 14px;
+}
 
+.link-btn{
+    text-decoration: none;
+    background: var(--primary);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.link-btn:hover{
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+.low-stock{
+    color:#ef4444;
+    font-weight:bold;
+}
