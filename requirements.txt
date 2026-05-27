@@ -1,5 +1,5 @@
-flask
+Flask
 gunicorn
-werkzeug
+Werkzeug
 num2words
 weasyprint

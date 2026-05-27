@@ -2,7 +2,8 @@
 <html>
 <head>
     <title>Tax Invoice</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet"
+      href="{{ url_for('static', filename='invoice.css') }}">
    <script src="{{ url_for('static', filename='theme.js') }}"></script>
 
     <style>
@@ -20,7 +21,7 @@
 </head>
 
 <body>
-
+<div class="invoice-container">
 <div class="right small">Original For Recipient</div>
 
 <!-- ================= HEADER ================= -->
@@ -103,8 +104,8 @@
 <td class="center">{{ i.hsn }}</td>
 <td class="center">{{ i.uom }}</td>
 <td class="center">{{ i.qty }}</td>
-<td class="center">{{ "%.2f"|format(i.rate) }}</td>
-<td class="center">{{ "%.2f"|format(i.amount) }}</td>
+<td class="center">{{ indian_currency(i.rate) }}</td>
+<td class="center">{{ indian_currency(i.amount) }}</td>
 </tr>
 {% endfor %}
 </table>
@@ -119,11 +120,11 @@
 <th>Total</th>
 </tr>
 <tr class="center">
-<td>{{ "%.2f"|format(Gross) }}</td>
-<td>{{ "%.2f"|format(cgst) }}</td>
-<td>{{ "%.2f"|format(sgst) }}</td>
-<td>{{ "%.2f"|format(igst) }}</td>
-<td>{{ "%.2f"|format(total) }}</td>
+<td>{{ indian_currency(Gross) }}</td>
+<td>{{ indian_currency(cgst) }}</td>
+<td>{{ indian_currency(sgst) }}</td>
+<td>{{ indian_currency(igst) }}</td>
+<td>{{ indian_currency(total) }}</td>
 </tr>
 </table>
 
@@ -138,11 +139,12 @@
 
 <br>
 <div class="no-print">
-    <button onclick="window.print()">Print Invoice</button>
-    <a href="/download/{{ pdf_file }}">Download PDF</a>
+    <button onclick="window.print()">
+        Print Invoice
+    </button>
 </div>
 
 
-
+</div>
 </body>
 </html>
