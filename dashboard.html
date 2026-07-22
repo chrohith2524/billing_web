@@ -98,6 +98,42 @@
             display: block;
         }
 
+        .stock-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .stock-tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .stock-tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .stock-tab-btn:hover {
+            color: #667eea;
+        }
+
+        .stock-tab-content {
+            display: none;
+        }
+
+        .stock-tab-content.active {
+            display: block;
+        }
+
         .sales-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -253,6 +289,7 @@
             border-collapse: collapse;
             margin-top: 20px;
             font-size: 13px;
+            overflow-x: auto;
         }
 
         table th {
@@ -275,6 +312,7 @@
         .action-buttons {
             display: flex;
             gap: 5px;
+            flex-wrap: wrap;
         }
 
         .btn-edit, .btn-delete, .btn-invoice, .btn-view {
@@ -340,7 +378,7 @@
             padding: 30px;
             border-radius: 8px;
             width: 90%;
-            max-width: 600px;
+            max-width: 700px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
             max-height: 90vh;
             overflow-y: auto;
@@ -378,11 +416,17 @@
             gap: 15px;
         }
 
+        .four-column {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
         .low-stock-alert {
             background: #fff3cd;
             border: 1px solid #ffc107;
             color: #856404;
-            padding: 12px;
+            padding: 15px;
             border-radius: 4px;
             margin-bottom: 20px;
             display: none;
@@ -390,6 +434,11 @@
 
         .low-stock-alert.show {
             display: block;
+        }
+
+        .low-stock-alert strong {
+            color: #856404;
+            font-size: 16px;
         }
 
         .status-badge {
@@ -448,6 +497,7 @@
             color: #666;
             font-size: 14px;
             margin-bottom: 10px;
+            word-break: break-word;
         }
 
         .note-card .note-date {
@@ -476,6 +526,10 @@
             .three-column {
                 grid-template-columns: 1fr 1fr;
             }
+
+            .four-column {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         @media (max-width: 768px) {
@@ -496,7 +550,7 @@
                 padding: 8px;
             }
 
-            .two-column, .three-column {
+            .two-column, .three-column, .four-column {
                 grid-template-columns: 1fr;
             }
 
@@ -511,6 +565,19 @@
             .tab-btn {
                 padding: 10px 12px;
                 font-size: 12px;
+            }
+
+            .stock-tab-btn {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-small {
+                width: 100%;
             }
         }
     </style>
@@ -571,69 +638,119 @@
             <div class="section">
                 <h2>📦 Stock Management</h2>
 
-                <div class="low-stock-alert" id="lowStockAlert">
-                    <strong>⚠️ Low Stock Alert!</strong><br>
-                    <span id="lowStockMessage"></span>
+                <!-- Stock Sub-tabs -->
+                <div class="stock-tabs">
+                    <button class="stock-tab-btn active" onclick="switchStockTab('addStock')">➕ Add Stock</button>
+                    <button class="stock-tab-btn" onclick="switchStockTab('updateStock')">✏️ Update Stock</button>
+                    <button class="stock-tab-btn" onclick="switchStockTab('viewStock')">👁️ View Stock</button>
                 </div>
 
-                <div class="search-bar">
-                    <input type="text" id="stockSearch" placeholder="Search by product code, name, or category...">
-                    <button onclick="searchStock()">🔍 Search</button>
+                <!-- ADD STOCK TAB -->
+                <div id="addStock" class="stock-tab-content active">
+                    <h3>Add New Stock</h3>
+
+                    <div class="search-bar">
+                        <input type="text" id="addStockSearch" placeholder="Search existing stock by product code, name, or HSN...">
+                        <button onclick="searchAddStock()">🔍 Search</button>
+                    </div>
+
+                    <div id="addStockSearchResults" style="display: none; margin-bottom: 20px;">
+                        <h4 style="color: #764ba2; margin-bottom: 10px;">Search Results:</h4>
+                        <div id="addStockResultsContainer"></div>
+                    </div>
+
+                    <form id="addStockForm">
+                        <div class="four-column">
+                            <div class="form-group">
+                                <label for="hsnCode">HSN Code:</label>
+                                <input type="text" id="hsnCode" required placeholder="e.g., 6908">
+                            </div>
+                            <div class="form-group">
+                                <label for="productCode">Product Code:</label>
+                                <input type="text" id="productCode" required placeholder="e.g., TILE001">
+                            </div>
+                            <div class="form-group">
+                                <label for="productName">Product Name:</label>
+                                <input type="text" id="productName" required placeholder="e.g., Ceramic Tiles">
+                            </div>
+                            <div class="form-group">
+                                <label for="noOfBoxes">No. of Boxes:</label>
+                                <input type="number" id="noOfBoxes" required min="0" placeholder="Enter number">
+                            </div>
+                        </div>
+
+                        <div class="three-column">
+                            <div class="form-group">
+                                <label for="quality">Quality:</label>
+                                <select id="quality" required>
+                                    <option value="">Select Quality</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Standard">Standard</option>
+                                    <option value="Commercial">Commercial</option>
+                                    <option value="Economy">Economy</option>
+                                    <option value="4th Grade">4th Grade</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="size">Size:</label>
+                                <select id="size" required>
+                                    <option value="">Select Size</option>
+                                    <option value="2x2">2×2</option>
+                                    <option value="2x4">2×4</option>
+                                    <option value="1x1.5">1×1.5</option>
+                                    <option value="1x1">1×1</option>
+                                    <option value="16x16">16×16</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="tileType">Tile Type:</label>
+                                <select id="tileType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Floor">Floor</option>
+                                    <option value="Wall">Wall</option>
+                                    <option value="Parking">Parking</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn">➕ Add Stock</button>
+                    </form>
                 </div>
 
-                <h3>Add/Update Stock</h3>
-                <form id="stockForm">
-                    <div class="two-column">
-                        <div class="form-group">
-                            <label for="productCode">Product Code:</label>
-                            <input type="text" id="productCode" required placeholder="e.g., TILE001">
-                        </div>
-                        <div class="form-group">
-                            <label for="productName">Product Name:</label>
-                            <input type="text" id="productName" required placeholder="e.g., Ceramic Tiles">
-                        </div>
+                <!-- UPDATE STOCK TAB -->
+                <div id="updateStock" class="stock-tab-content">
+                    <div class="low-stock-alert" id="lowStockAlert">
+                        <strong>⚠️ Low Stock Alert (Below 20 Boxes)!</strong><br>
+                        <span id="lowStockMessage"></span>
                     </div>
 
-                    <div class="two-column">
-                        <div class="form-group">
-                            <label for="noOfBoxes">No. of Boxes:</label>
-                            <input type="number" id="noOfBoxes" required placeholder="Enter number of boxes" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label for="productType">Product Type:</label>
-                            <select id="productType" required>
-                                <option value="">Select Product Type</option>
-                                <option value="Tiles">Tiles</option>
-                                <option value="Sanitary Ware">Sanitary Ware</option>
-                                <option value="Grout & Adhesive">Grout & Adhesive</option>
-                            </select>
-                        </div>
+                    <div class="search-bar">
+                        <input type="text" id="stockSearch" placeholder="Search by product code, name, or HSN...">
+                        <button onclick="searchUpdateStock()">🔍 Search</button>
                     </div>
 
-                    <div class="two-column">
-                        <div class="form-group">
-                            <label for="category">Category:</label>
-                            <select id="category" required>
-                                <option value="">Select Category</option>
-                                <option value="Premium">Premium</option>
-                                <option value="Standard">Standard</option>
-                                <option value="Commercial">Commercial</option>
-                                <option value="Economy">Economy</option>
-                                <option value="Last Grade">Last Grade</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="unitPrice">Price per Box (₹):</label>
-                            <input type="number" id="unitPrice" required placeholder="Enter price" min="0" step="0.01">
-                        </div>
+                    <h3>Stock List (Update)</h3>
+                    <div id="updateStockTableContainer">
+                        <div class="empty-message">No stock items yet.</div>
+                    </div>
+                </div>
+
+                <!-- VIEW STOCK TAB -->
+                <div id="viewStock" class="stock-tab-content">
+                    <div class="low-stock-alert" id="viewLowStockAlert">
+                        <strong>⚠️ Low Stock Alert (Below 20 Boxes)!</strong><br>
+                        <span id="viewLowStockMessage"></span>
                     </div>
 
-                    <button type="submit" class="btn">Add/Update Stock</button>
-                </form>
+                    <div class="search-bar">
+                        <input type="text" id="viewStockSearch" placeholder="Search by product code, name, or HSN...">
+                        <button onclick="searchViewStock()">🔍 Search</button>
+                    </div>
 
-                <h3>Stock List</h3>
-                <div id="stockTableContainer">
-                    <div class="empty-message">No stock items yet. Add some to get started!</div>
+                    <h3>View Stock</h3>
+                    <div id="viewStockTableContainer">
+                        <div class="empty-message">No stock items yet.</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -833,7 +950,11 @@
             <span class="close" onclick="closeEditModal()">&times;</span>
             <h3>Edit Stock Item</h3>
             <form id="editStockForm">
-                <div class="two-column">
+                <div class="four-column">
+                    <div class="form-group">
+                        <label for="editHsnCode">HSN Code:</label>
+                        <input type="text" id="editHsnCode" required>
+                    </div>
                     <div class="form-group">
                         <label for="editProductCode">Product Code:</label>
                         <input type="text" id="editProductCode" required>
@@ -842,38 +963,46 @@
                         <label for="editProductName">Product Name:</label>
                         <input type="text" id="editProductName" required>
                     </div>
-                </div>
-
-                <div class="two-column">
                     <div class="form-group">
                         <label for="editNoOfBoxes">No. of Boxes:</label>
                         <input type="number" id="editNoOfBoxes" required min="0">
                     </div>
-                    <div class="form-group">
-                        <label for="editProductType">Product Type:</label>
-                        <select id="editProductType" required>
-                            <option value="Tiles">Tiles</option>
-                            <option value="Sanitary Ware">Sanitary Ware</option>
-                            <option value="Grout & Adhesive">Grout & Adhesive</option>
-                        </select>
-                    </div>
                 </div>
 
-                <div class="two-column">
+                <div class="three-column">
                     <div class="form-group">
-                        <label for="editCategory">Category:</label>
-                        <select id="editCategory" required>
+                        <label for="editQuality">Quality:</label>
+                        <select id="editQuality" required>
                             <option value="Premium">Premium</option>
                             <option value="Standard">Standard</option>
                             <option value="Commercial">Commercial</option>
                             <option value="Economy">Economy</option>
-                            <option value="Last Grade">Last Grade</option>
+                            <option value="4th Grade">4th Grade</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="editUnitPrice">Price per Box (₹):</label>
-                        <input type="number" id="editUnitPrice" required min="0" step="0.01">
+                        <label for="editSize">Size:</label>
+                        <select id="editSize" required>
+                            <option value="2x2">2×2</option>
+                            <option value="2x4">2×4</option>
+                            <option value="1x1.5">1×1.5</option>
+                            <option value="1x1">1×1</option>
+                            <option value="16x16">16×16</option>
+                        </select>
                     </div>
+                    <div class="form-group">
+                        <label for="editTileType">Tile Type:</label>
+                        <select id="editTileType" required>
+                            <option value="Floor">Floor</option>
+                            <option value="Wall">Wall</option>
+                            <option value="Parking">Parking</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editNoOfBoxes2">No. of Boxes (Update Quantity):</label>
+                    <input type="number" id="editNoOfBoxes2" required min="0" placeholder="Update quantity">
                 </div>
 
                 <button type="submit" class="btn">Update Stock</button>
@@ -1052,7 +1181,7 @@
         let editingExpenseIndex = -1;
         let editingNoteIndex = -1;
 
-        const LOW_STOCK_THRESHOLD = 5;
+        const LOW_STOCK_THRESHOLD = 20;
 
         // Set today's date as default
         const today = new Date().toISOString().split('T')[0];
@@ -1062,27 +1191,45 @@
 
         // TAB SWITCHING
         function switchTab(tabName) {
-            // Hide all tabs
             const tabs = document.querySelectorAll('.tab-content');
             tabs.forEach(tab => tab.classList.remove('active'));
 
-            // Deactivate all buttons
             const buttons = document.querySelectorAll('.tab-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
 
-            // Show selected tab
             document.getElementById(tabName).classList.add('active');
-
-            // Activate button
             event.target.classList.add('active');
 
-            // Trigger render functions for fresh data
             if (tabName === 'sales') calculateSalesStats();
-            if (tabName === 'stock') renderStockTable();
+            if (tabName === 'stock') {
+                renderUpdateStockTable();
+                checkLowStock();
+            }
             if (tabName === 'invoices') renderInvoicesTable();
             if (tabName === 'attendance') renderAttendanceTable();
             if (tabName === 'expenses') renderExpenseTable();
             if (tabName === 'notes') renderNotesContainer();
+        }
+
+        // STOCK TAB SWITCHING
+        function switchStockTab(tabName) {
+            const tabs = document.querySelectorAll('.stock-tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('.stock-tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'updateStock') {
+                renderUpdateStockTable();
+                checkLowStock();
+            }
+            if (tabName === 'viewStock') {
+                renderViewStockTable();
+                checkLowStockView();
+            }
         }
 
         // ==================== SALES FUNCTIONS ====================
@@ -1100,17 +1247,14 @@
                 if (invoice.status === 'Paid' || invoice.status === 'Sent') {
                     const amount = invoice.amount || 0;
 
-                    // Today's sales
                     if (invDate.toDateString() === today.toDateString()) {
                         todaySales += amount;
                     }
 
-                    // Monthly sales
                     if (invDate.getMonth() === currentMonth && invDate.getFullYear() === currentYear) {
                         monthlySales += amount;
                     }
 
-                    // Yearly sales
                     if (invDate.getFullYear() === currentYear) {
                         yearlySales += amount;
                     }
@@ -1148,17 +1292,18 @@
         }
 
         // ==================== STOCK FUNCTIONS ====================
-        document.getElementById('stockForm').addEventListener('submit', function(e) {
+        document.getElementById('addStockForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
             const product = {
                 id: Date.now(),
+                hsnCode: document.getElementById('hsnCode').value,
                 productCode: document.getElementById('productCode').value,
                 productName: document.getElementById('productName').value,
                 noOfBoxes: parseInt(document.getElementById('noOfBoxes').value),
-                productType: document.getElementById('productType').value,
-                category: document.getElementById('category').value,
-                unitPrice: parseFloat(document.getElementById('unitPrice').value)
+                quality: document.getElementById('quality').value,
+                size: document.getElementById('size').value,
+                tileType: document.getElementById('tileType').value
             };
 
             stockData.push(product);
@@ -1166,12 +1311,65 @@
             filteredStockData = [...stockData];
 
             this.reset();
-            renderStockTable();
-            checkLowStock();
+            document.getElementById('addStockSearch').value = '';
+            document.getElementById('addStockSearchResults').style.display = 'none';
             alert('Stock added successfully!');
         });
 
-        function searchStock() {
+        function searchAddStock() {
+            const searchTerm = document.getElementById('addStockSearch').value.toLowerCase();
+            const resultsContainer = document.getElementById('addStockSearchResults');
+            const resultsDiv = document.getElementById('addStockResultsContainer');
+
+            if (searchTerm.trim() === '') {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+
+            const filtered = stockData.filter(item =>
+                item.productCode.toLowerCase().includes(searchTerm) ||
+                item.productName.toLowerCase().includes(searchTerm) ||
+                item.hsnCode.toLowerCase().includes(searchTerm)
+            );
+
+            if (filtered.length === 0) {
+                resultsDiv.innerHTML = '<p style="color: #999;">No matching products found.</p>';
+            } else {
+                let html = '<table style="font-size: 12px;"><thead><tr><th>HSN</th><th>Code</th><th>Product</th><th>Quality</th><th>Size</th><th>Type</th><th>Boxes</th><th>Action</th></tr></thead><tbody>';
+                filtered.forEach((item, idx) => {
+                    html += `<tr>
+                        <td>${item.hsnCode}</td>
+                        <td>${item.productCode}</td>
+                        <td>${item.productName}</td>
+                        <td>${item.quality}</td>
+                        <td>${item.size}</td>
+                        <td>${item.tileType}</td>
+                        <td>${item.noOfBoxes}</td>
+                        <td><button class="btn-view btn-small" onclick="populateAddForm(${item.id})">Add More</button></td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                resultsDiv.innerHTML = html;
+            }
+
+            resultsContainer.style.display = 'block';
+        }
+
+        function populateAddForm(stockId) {
+            const product = stockData.find(p => p.id === stockId);
+            if (product) {
+                document.getElementById('hsnCode').value = product.hsnCode;
+                document.getElementById('productCode').value = product.productCode;
+                document.getElementById('productName').value = product.productName;
+                document.getElementById('quality').value = product.quality;
+                document.getElementById('size').value = product.size;
+                document.getElementById('tileType').value = product.tileType;
+                document.getElementById('noOfBoxes').focus();
+                document.getElementById('addStockSearchResults').style.display = 'none';
+            }
+        }
+
+        function searchUpdateStock() {
             const searchTerm = document.getElementById('stockSearch').value.toLowerCase();
 
             if (searchTerm.trim() === '') {
@@ -1180,53 +1378,123 @@
                 filteredStockData = stockData.filter(item =>
                     item.productCode.toLowerCase().includes(searchTerm) ||
                     item.productName.toLowerCase().includes(searchTerm) ||
-                    item.category.toLowerCase().includes(searchTerm) ||
-                    item.productType.toLowerCase().includes(searchTerm)
+                    item.hsnCode.toLowerCase().includes(searchTerm) ||
+                    item.quality.toLowerCase().includes(searchTerm)
                 );
             }
 
-            renderStockTable();
+            renderUpdateStockTable();
+        }
+
+        function searchViewStock() {
+            const searchTerm = document.getElementById('viewStockSearch').value.toLowerCase();
+            let searchData = [...stockData];
+
+            if (searchTerm.trim() !== '') {
+                searchData = stockData.filter(item =>
+                    item.productCode.toLowerCase().includes(searchTerm) ||
+                    item.productName.toLowerCase().includes(searchTerm) ||
+                    item.hsnCode.toLowerCase().includes(searchTerm) ||
+                    item.quality.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            renderViewStockTableFiltered(searchData);
         }
 
         function checkLowStock() {
-            const lowStockItems = stockData.filter(item => item.noOfBoxes <= LOW_STOCK_THRESHOLD);
+            const lowStockItems = stockData.filter(item => item.noOfBoxes < LOW_STOCK_THRESHOLD);
             const alert = document.getElementById('lowStockAlert');
             const message = document.getElementById('lowStockMessage');
 
             if (lowStockItems.length > 0) {
-                message.textContent = `${lowStockItems.length} product(s) have low stock: ${lowStockItems.map(i => i.productName).join(', ')}`;
+                const itemList = lowStockItems.map(i => `<strong>${i.productName}</strong> (${i.noOfBoxes} boxes)`).join(', ');
+                message.innerHTML = `${lowStockItems.length} product(s) have low stock: ${itemList}`;
                 alert.classList.add('show');
             } else {
                 alert.classList.remove('show');
             }
         }
 
-        function renderStockTable() {
-            const container = document.getElementById('stockTableContainer');
+        function checkLowStockView() {
+            const lowStockItems = stockData.filter(item => item.noOfBoxes < LOW_STOCK_THRESHOLD);
+            const alert = document.getElementById('viewLowStockAlert');
+            const message = document.getElementById('viewLowStockMessage');
 
-            if (filteredStockData.length === 0) {
+            if (lowStockItems.length > 0) {
+                const itemList = lowStockItems.map(i => `<strong>${i.productName}</strong> (${i.noOfBoxes} boxes)`).join(', ');
+                message.innerHTML = `${lowStockItems.length} product(s) have low stock: ${itemList}`;
+                alert.classList.add('show');
+            } else {
+                alert.classList.remove('show');
+            }
+        }
+
+        function renderUpdateStockTable() {
+            const container = document.getElementById('updateStockTableContainer');
+
+            if (stockData.length === 0) {
+                container.innerHTML = '<div class="empty-message">No stock items yet.</div>';
+                return;
+            }
+
+            let html = '<table style="font-size: 12px;"><thead><tr><th>HSN</th><th>Code</th><th>Product</th><th>Quality</th><th>Size</th><th>Type</th><th>Boxes</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+
+            stockData.forEach((item, index) => {
+                const isLowStock = item.noOfBoxes < LOW_STOCK_THRESHOLD;
+                const rowStyle = isLowStock ? 'background: #ffe0e0;' : '';
+                const statusText = isLowStock ? `⚠️ Low (${item.noOfBoxes})` : `✓ OK (${item.noOfBoxes})`;
+                const statusClass = isLowStock ? 'status-absent' : 'status-present';
+
+                html += `<tr style="${rowStyle}">
+                    <td>${item.hsnCode}</td>
+                    <td>${item.productCode}</td>
+                    <td>${item.productName}</td>
+                    <td>${item.quality}</td>
+                    <td>${item.size}</td>
+                    <td>${item.tileType}</td>
+                    <td>${item.noOfBoxes}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn-edit btn-small" onclick="editStock(${index})">Edit</button>
+                        <button class="btn-delete btn-small" onclick="deleteStock(${index})">Delete</button>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function renderViewStockTable() {
+            renderViewStockTableFiltered([...stockData]);
+        }
+
+        function renderViewStockTableFiltered(dataToRender) {
+            const container = document.getElementById('viewStockTableContainer');
+
+            if (dataToRender.length === 0) {
                 container.innerHTML = '<div class="empty-message">No stock items found.</div>';
                 return;
             }
 
-            let html = '<table><thead><tr><th>Code</th><th>Product Name</th><th>Type</th><th>Category</th><th>Boxes</th><th>Price/Box</th><th>Actions</th></tr></thead><tbody>';
+            let html = '<table style="font-size: 12px;"><thead><tr><th>HSN</th><th>Code</th><th>Product</th><th>Quality</th><th>Size</th><th>Type</th><th>Boxes</th><th>Status</th></tr></thead><tbody>';
 
-            filteredStockData.forEach(item => {
-                const stockIndex = stockData.findIndex(s => s.id === item.id);
-                const isLowStock = item.noOfBoxes <= LOW_STOCK_THRESHOLD;
+            dataToRender.forEach((item) => {
+                const isLowStock = item.noOfBoxes < LOW_STOCK_THRESHOLD;
                 const rowStyle = isLowStock ? 'background: #ffe0e0;' : '';
+                const statusText = isLowStock ? `⚠️ Low (${item.noOfBoxes})` : `✓ OK (${item.noOfBoxes})`;
+                const statusClass = isLowStock ? 'status-absent' : 'status-present';
 
                 html += `<tr style="${rowStyle}">
+                    <td>${item.hsnCode}</td>
                     <td>${item.productCode}</td>
-                    <td>${item.productName}${isLowStock ? ' ⚠️' : ''}</td>
-                    <td>${item.productType}</td>
-                    <td>${item.category}</td>
+                    <td>${item.productName}</td>
+                    <td>${item.quality}</td>
+                    <td>${item.size}</td>
+                    <td>${item.tileType}</td>
                     <td>${item.noOfBoxes}</td>
-                    <td>₹${item.unitPrice.toFixed(2)}</td>
-                    <td class="action-buttons">
-                        <button class="btn-edit btn-small" onclick="editStock(${stockIndex})">Edit</button>
-                        <button class="btn-delete btn-small" onclick="deleteStock(${stockIndex})">Delete</button>
-                    </td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                 </tr>`;
             });
 
@@ -1238,12 +1506,14 @@
             editingStockIndex = index;
             const item = stockData[index];
 
+            document.getElementById('editHsnCode').value = item.hsnCode;
             document.getElementById('editProductCode').value = item.productCode;
             document.getElementById('editProductName').value = item.productName;
             document.getElementById('editNoOfBoxes').value = item.noOfBoxes;
-            document.getElementById('editProductType').value = item.productType;
-            document.getElementById('editCategory').value = item.category;
-            document.getElementById('editUnitPrice').value = item.unitPrice;
+            document.getElementById('editNoOfBoxes2').value = item.noOfBoxes;
+            document.getElementById('editQuality').value = item.quality;
+            document.getElementById('editSize').value = item.size;
+            document.getElementById('editTileType').value = item.tileType;
 
             document.getElementById('editStockModal').style.display = 'block';
         }
@@ -1253,18 +1523,19 @@
 
             stockData[editingStockIndex] = {
                 id: stockData[editingStockIndex].id,
+                hsnCode: document.getElementById('editHsnCode').value,
                 productCode: document.getElementById('editProductCode').value,
                 productName: document.getElementById('editProductName').value,
-                noOfBoxes: parseInt(document.getElementById('editNoOfBoxes').value),
-                productType: document.getElementById('editProductType').value,
-                category: document.getElementById('editCategory').value,
-                unitPrice: parseFloat(document.getElementById('editUnitPrice').value)
+                noOfBoxes: parseInt(document.getElementById('editNoOfBoxes2').value),
+                quality: document.getElementById('editQuality').value,
+                size: document.getElementById('editSize').value,
+                tileType: document.getElementById('editTileType').value
             };
 
             localStorage.setItem('stockData', JSON.stringify(stockData));
             filteredStockData = [...stockData];
             closeEditModal();
-            renderStockTable();
+            renderUpdateStockTable();
             checkLowStock();
             alert('Stock updated successfully!');
         });
@@ -1279,7 +1550,7 @@
                 stockData.splice(index, 1);
                 localStorage.setItem('stockData', JSON.stringify(stockData));
                 filteredStockData = [...stockData];
-                renderStockTable();
+                renderUpdateStockTable();
                 checkLowStock();
                 alert('Stock deleted successfully!');
             }
@@ -1698,7 +1969,7 @@
         }
 
         // ==================== INITIALIZE ====================
-        renderStockTable();
+        renderUpdateStockTable();
         renderInvoicesTable();
         renderAttendanceTable();
         renderExpenseTable();
