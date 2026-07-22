@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - TilesPro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        nav a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-btn:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .sales-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h4 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .stat-card.today {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .stat-card.monthly {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .stat-card.yearly {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #764ba2;
+        }
+
+        .btn-secondary {
+            background: #ff6b6b;
+            margin-top: 5px;
+        }
+
+        .btn-secondary:hover {
+            background: #ff5252;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 14px;
+            width: auto;
+            margin-top: 0;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .search-bar button {
+            background: #667eea;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .search-bar button:hover {
+            background: #764ba2;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-edit, .btn-delete, .btn-invoice, .btn-view {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .btn-edit {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #45b8b0;
+        }
+
+        .btn-delete {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #ff5252;
+        }
+
+        .btn-invoice {
+            background: #ffd93d;
+            color: #333;
+        }
+
+        .btn-invoice:hover {
+            background: #ffc914;
+        }
+
+        .btn-view {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #764ba2;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #999;
+            padding: 40px 0;
+            font-size: 16px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .three-column {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .low-stock-alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .low-stock-alert.show {
+            display: block;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-paid {
+            background: #4ecdc4;
+            color: #333;
+        }
+
+        .status-pending {
+            background: #ffd93d;
+            color: #333;
+        }
+
+        .status-draft {
+            background: #ddd;
+            color: #666;
+        }
+
+        .status-present {
+            background: #43e97b;
+            color: white;
+        }
+
+        .status-absent {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .notes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .note-card {
+            background: #fff9e6;
+            border-left: 4px solid #ffd93d;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .note-card h4 {
+            color: #764ba2;
+            margin-bottom: 8px;
+        }
+
+        .note-card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .note-card .note-date {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .note-card .action-buttons {
+            gap: 5px;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 1024px) {
+            .sales-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .three-column {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                gap: 1rem;
+                font-size: 14px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 11px;
+            }
+
+            table th, table td {
+                padding: 8px;
+            }
+
+            .two-column, .three-column {
+                grid-template-columns: 1fr;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .tabs {
+                gap: 5px;
+            }
+
+            .tab-btn {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🏢 TilesPro</div>
+                <nav>
+                    <a href="index.html">Home</a>
+                    <a href="stock.html">Stock</a>
+                    <a href="billing.html">Billing</a>
+                    <a href="dashboard.html">Dashboard</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('sales')">💰 Sales</button>
+            <button class="tab-btn" onclick="switchTab('stock')">📦 Stock</button>
+            <button class="tab-btn" onclick="switchTab('invoices')">📄 Invoices</button>
+            <button class="tab-btn" onclick="switchTab('attendance')">📋 Attendance</button>
+            <button class="tab-btn" onclick="switchTab('expenses')">💸 Expenses</button>
+            <button class="tab-btn" onclick="switchTab('notes')">📝 Notes</button>
+        </div>
+
+        <!-- SALES TAB -->
+        <div id="sales" class="tab-content active">
+            <div class="sales-stats">
+                <div class="stat-card today">
+                    <h4>Today's Sales</h4>
+                    <div class="number" id="todaySales">₹0</div>
+                </div>
+                <div class="stat-card monthly">
+                    <h4>Monthly Sales</h4>
+                    <div class="number" id="monthlySales">₹0</div>
+                </div>
+                <div class="stat-card yearly">
+                    <h4>Yearly Sales</h4>
+                    <div class="number" id="yearlySales">₹0</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📊 Sales Overview</h2>
+                <div id="salesTableContainer">
+                    <div class="empty-message">No sales data available.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STOCK TAB -->
+        <div id="stock" class="tab-content">
+            <div class="section">
+                <h2>📦 Stock Management</h2>
+
+                <div class="low-stock-alert" id="lowStockAlert">
+                    <strong>⚠️ Low Stock Alert!</strong><br>
+                    <span id="lowStockMessage"></span>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" id="stockSearch" placeholder="Search by product code, name, or category...">
+                    <button onclick="searchStock()">🔍 Search</button>
+                </div>
+
+                <h3>Add/Update Stock</h3>
+                <form id="stockForm">
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="productCode">Product Code:</label>
+                            <input type="text" id="productCode" required placeholder="e.g., TILE001">
+                        </div>
+                        <div class="form-group">
+                            <label for="productName">Product Name:</label>
+                            <input type="text" id="productName" required placeholder="e.g., Ceramic Tiles">
+                        </div>
+                    </div>
+
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="noOfBoxes">No. of Boxes:</label>
+                            <input type="number" id="noOfBoxes" required placeholder="Enter number of boxes" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="productType">Product Type:</label>
+                            <select id="productType" required>
+                                <option value="">Select Product Type</option>
+                                <option value="Tiles">Tiles</option>
+                                <option value="Sanitary Ware">Sanitary Ware</option>
+                                <option value="Grout & Adhesive">Grout & Adhesive</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="category">Category:</label>
+                            <select id="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Premium">Premium</option>
+                                <option value="Standard">Standard</option>
+                                <option value="Commercial">Commercial</option>
+                                <option value="Economy">Economy</option>
+                                <option value="Last Grade">Last Grade</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="unitPrice">Price per Box (₹):</label>
+                            <input type="number" id="unitPrice" required placeholder="Enter price" min="0" step="0.01">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">Add/Update Stock</button>
+                </form>
+
+                <h3>Stock List</h3>
+                <div id="stockTableContainer">
+                    <div class="empty-message">No stock items yet. Add some to get started!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INVOICES TAB -->
+        <div id="invoices" class="tab-content">
+            <div class="section">
+                <h2>📄 Invoice Management</h2>
+
+                <h3>Create New Invoice</h3>
+                <form id="invoiceForm">
+                    <div class="form-group">
+                        <label for="invoiceNo">Invoice No.:</label>
+                        <input type="text" id="invoiceNo" required placeholder="e.g., INV-001">
+                    </div>
+
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="invCustomerName">Customer Name:</label>
+                            <input type="text" id="invCustomerName" required placeholder="Enter customer name">
+                        </div>
+                        <div class="form-group">
+                            <label for="invCustomerPhone">Customer Phone:</label>
+                            <input type="tel" id="invCustomerPhone" required placeholder="Enter phone number">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="invAddress">Address:</label>
+                        <textarea id="invAddress" rows="2" placeholder="Enter delivery address"></textarea>
+                    </div>
+
+                    <div class="three-column">
+                        <div class="form-group">
+                            <label for="invDate">Date:</label>
+                            <input type="date" id="invDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="vehicleNo">Vehicle No.:</label>
+                            <input type="text" id="vehicleNo" placeholder="e.g., MH01AB1234">
+                        </div>
+                        <div class="form-group">
+                            <label for="invAmount">Amount (₹):</label>
+                            <input type="number" id="invAmount" required placeholder="Enter amount" min="0" step="0.01">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">Create Invoice</button>
+                </form>
+
+                <h3>Invoice List</h3>
+                <div id="invoicesTableContainer">
+                    <div class="empty-message">No invoices yet. Create one to get started!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ATTENDANCE TAB -->
+        <div id="attendance" class="tab-content">
+            <div class="section">
+                <h2>📋 Staff Attendance</h2>
+
+                <h3>Mark Attendance</h3>
+                <form id="attendanceForm">
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="staffName">Staff Name:</label>
+                            <input type="text" id="staffName" required placeholder="Enter name">
+                        </div>
+                        <div class="form-group">
+                            <label for="attendanceDate">Date:</label>
+                            <input type="date" id="attendanceDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="attendanceStatus">Status:</label>
+                        <select id="attendanceStatus" required>
+                            <option value="">Select Status</option>
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                            <option value="Half Day">Half Day</option>
+                            <option value="Leave">Leave</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn">Mark Attendance</button>
+                </form>
+
+                <h3>Attendance Records</h3>
+                <div id="attendanceTableContainer">
+                    <div class="empty-message">No attendance records yet. Add entries to get started!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXPENSES TAB -->
+        <div id="expenses" class="tab-content">
+            <div class="section">
+                <h2>💸 Expense Management</h2>
+
+                <div class="sales-stats">
+                    <div class="stat-card">
+                        <h4>Total Expenses</h4>
+                        <div class="number" id="totalExpenses">₹0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>This Month</h4>
+                        <div class="number" id="monthlyExpenses">₹0</div>
+                    </div>
+                </div>
+
+                <h3>Add Expense</h3>
+                <form id="expenseForm">
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="expenseName">Expense Name:</label>
+                            <input type="text" id="expenseName" required placeholder="e.g., Office Supplies">
+                        </div>
+                        <div class="form-group">
+                            <label for="expenseCategory">Category:</label>
+                            <select id="expenseCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="Supplies">Supplies</option>
+                                <option value="Utilities">Utilities</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Labour">Labour</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="expenseAmount">Amount (₹):</label>
+                            <input type="number" id="expenseAmount" required placeholder="Enter amount" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="expenseDate">Date:</label>
+                            <input type="date" id="expenseDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expenseDescription">Description:</label>
+                        <textarea id="expenseDescription" rows="2" placeholder="Enter description (optional)"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">Add Expense</button>
+                </form>
+
+                <h3>Expense Records</h3>
+                <div id="expenseTableContainer">
+                    <div class="empty-message">No expenses yet. Add entries to get started!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTES TAB -->
+        <div id="notes" class="tab-content">
+            <div class="section">
+                <h2>📝 Notes</h2>
+
+                <h3>Add New Note</h3>
+                <form id="noteForm">
+                    <div class="form-group">
+                        <label for="noteTitle">Title:</label>
+                        <input type="text" id="noteTitle" required placeholder="Enter note title">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="noteContent">Content:</label>
+                        <textarea id="noteContent" rows="4" required placeholder="Enter your note here..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">Save Note</button>
+                </form>
+
+                <h3>Your Notes</h3>
+                <div id="notesContainer">
+                    <div class="empty-message">No notes yet. Create one to get started!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 TilesPro Dashboard. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Edit Stock Modal -->
+    <div id="editStockModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h3>Edit Stock Item</h3>
+            <form id="editStockForm">
+                <div class="two-column">
+                    <div class="form-group">
+                        <label for="editProductCode">Product Code:</label>
+                        <input type="text" id="editProductCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductName">Product Name:</label>
+                        <input type="text" id="editProductName" required>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="form-group">
+                        <label for="editNoOfBoxes">No. of Boxes:</label>
+                        <input type="number" id="editNoOfBoxes" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductType">Product Type:</label>
+                        <select id="editProductType" required>
+                            <option value="Tiles">Tiles</option>
+                            <option value="Sanitary Ware">Sanitary Ware</option>
+                            <option value="Grout & Adhesive">Grout & Adhesive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="form-group">
+                        <label for="editCategory">Category:</label>
+                        <select id="editCategory" required>
+                            <option value="Premium">Premium</option>
+                            <option value="Standard">Standard</option>
+                            <option value="Commercial">Commercial</option>
+                            <option value="Economy">Economy</option>
+                            <option value="Last Grade">Last Grade</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editUnitPrice">Price per Box (₹):</label>
+                        <input type="number" id="editUnitPrice" required min="0" step="0.01">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Update Stock</button>
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Invoice Modal -->
+    <div id="editInvoiceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeInvoiceModal()">&times;</span>
+            <h3>Edit Invoice</h3>
+            <form id="editInvoiceForm">
+                <div class="form-group">
+                    <label for="editInvoiceNo">Invoice No.:</label>
+                    <input type="text" id="editInvoiceNo" required readonly>
+                </div>
+
+                <div class="two-column">
+                    <div class="form-group">
+                        <label for="editInvCustomerName">Customer Name:</label>
+                        <input type="text" id="editInvCustomerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editInvCustomerPhone">Customer Phone:</label>
+                        <input type="tel" id="editInvCustomerPhone" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editInvAddress">Address:</label>
+                    <textarea id="editInvAddress" rows="2"></textarea>
+                </div>
+
+                <div class="three-column">
+                    <div class="form-group">
+                        <label for="editInvDate">Date:</label>
+                        <input type="date" id="editInvDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editVehicleNo">Vehicle No.:</label>
+                        <input type="text" id="editVehicleNo">
+                    </div>
+                    <div class="form-group">
+                        <label for="editInvAmount">Amount (₹):</label>
+                        <input type="number" id="editInvAmount" required min="0" step="0.01">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editInvStatus">Status:</label>
+                    <select id="editInvStatus" required>
+                        <option value="Draft">Draft</option>
+                        <option value="Sent">Sent</option>
+                        <option value="Pending">Pending Payment</option>
+                        <option value="Paid">Paid</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn">Update Invoice</button>
+                <button type="button" class="btn btn-secondary" onclick="closeInvoiceModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Attendance Modal -->
+    <div id="editAttendanceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAttendanceModal()">&times;</span>
+            <h3>Edit Attendance</h3>
+            <form id="editAttendanceForm">
+                <div class="form-group">
+                    <label for="editStaffName">Staff Name:</label>
+                    <input type="text" id="editStaffName" required readonly>
+                </div>
+                <div class="form-group">
+                    <label for="editAttendanceDate">Date:</label>
+                    <input type="date" id="editAttendanceDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="editAttendanceStatus">Status:</label>
+                    <select id="editAttendanceStatus" required>
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                        <option value="Half Day">Half Day</option>
+                        <option value="Leave">Leave</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Update Attendance</button>
+                <button type="button" class="btn btn-secondary" onclick="closeAttendanceModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Expense Modal -->
+    <div id="editExpenseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeExpenseModal()">&times;</span>
+            <h3>Edit Expense</h3>
+            <form id="editExpenseForm">
+                <div class="two-column">
+                    <div class="form-group">
+                        <label for="editExpenseName">Expense Name:</label>
+                        <input type="text" id="editExpenseName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editExpenseCategory">Category:</label>
+                        <select id="editExpenseCategory" required>
+                            <option value="Supplies">Supplies</option>
+                            <option value="Utilities">Utilities</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Labour">Labour</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="form-group">
+                        <label for="editExpenseAmount">Amount (₹):</label>
+                        <input type="number" id="editExpenseAmount" required min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editExpenseDate">Date:</label>
+                        <input type="date" id="editExpenseDate" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editExpenseDescription">Description:</label>
+                    <textarea id="editExpenseDescription" rows="2"></textarea>
+                </div>
+
+                <button type="submit" class="btn">Update Expense</button>
+                <button type="button" class="btn btn-secondary" onclick="closeExpenseModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Note Modal -->
+    <div id="editNoteModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeNoteModal()">&times;</span>
+            <h3>Edit Note</h3>
+            <form id="editNoteForm">
+                <div class="form-group">
+                    <label for="editNoteTitle">Title:</label>
+                    <input type="text" id="editNoteTitle" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editNoteContent">Content:</label>
+                    <textarea id="editNoteContent" rows="4" required></textarea>
+                </div>
+
+                <button type="submit" class="btn">Update Note</button>
+                <button type="button" class="btn btn-secondary" onclick="closeNoteModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data from localStorage
+        let stockData = JSON.parse(localStorage.getItem('stockData')) || [];
+        let invoiceData = JSON.parse(localStorage.getItem('invoiceData')) || [];
+        let attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || [];
+        let expenseData = JSON.parse(localStorage.getItem('expenseData')) || [];
+        let notesData = JSON.parse(localStorage.getItem('notesData')) || [];
+
+        let filteredStockData = [...stockData];
+        let editingStockIndex = -1;
+        let editingInvoiceIndex = -1;
+        let editingAttendanceIndex = -1;
+        let editingExpenseIndex = -1;
+        let editingNoteIndex = -1;
+
+        const LOW_STOCK_THRESHOLD = 5;
+
+        // Set today's date as default
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('invDate').value = today;
+        document.getElementById('attendanceDate').value = today;
+        document.getElementById('expenseDate').value = today;
+
+        // TAB SWITCHING
+        function switchTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Deactivate all buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Activate button
+            event.target.classList.add('active');
+
+            // Trigger render functions for fresh data
+            if (tabName === 'sales') calculateSalesStats();
+            if (tabName === 'stock') renderStockTable();
+            if (tabName === 'invoices') renderInvoicesTable();
+            if (tabName === 'attendance') renderAttendanceTable();
+            if (tabName === 'expenses') renderExpenseTable();
+            if (tabName === 'notes') renderNotesContainer();
+        }
+
+        // ==================== SALES FUNCTIONS ====================
+        function calculateSalesStats() {
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+
+            let todaySales = 0;
+            let monthlySales = 0;
+            let yearlySales = 0;
+
+            invoiceData.forEach(invoice => {
+                const invDate = new Date(invoice.date);
+                if (invoice.status === 'Paid' || invoice.status === 'Sent') {
+                    const amount = invoice.amount || 0;
+
+                    // Today's sales
+                    if (invDate.toDateString() === today.toDateString()) {
+                        todaySales += amount;
+                    }
+
+                    // Monthly sales
+                    if (invDate.getMonth() === currentMonth && invDate.getFullYear() === currentYear) {
+                        monthlySales += amount;
+                    }
+
+                    // Yearly sales
+                    if (invDate.getFullYear() === currentYear) {
+                        yearlySales += amount;
+                    }
+                }
+            });
+
+            document.getElementById('todaySales').textContent = '₹' + todaySales.toFixed(2);
+            document.getElementById('monthlySales').textContent = '₹' + monthlySales.toFixed(2);
+            document.getElementById('yearlySales').textContent = '₹' + yearlySales.toFixed(2);
+
+            renderSalesTable();
+        }
+
+        function renderSalesTable() {
+            const container = document.getElementById('salesTableContainer');
+            if (invoiceData.length === 0) {
+                container.innerHTML = '<div class="empty-message">No sales data available.</div>';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>Invoice No.</th><th>Customer</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead><tbody>';
+
+            invoiceData.filter(inv => inv.status === 'Paid' || inv.status === 'Sent').forEach(invoice => {
+                html += `<tr>
+                    <td>${invoice.invoiceNo}</td>
+                    <td>${invoice.customerName}</td>
+                    <td>${new Date(invoice.date).toLocaleDateString()}</td>
+                    <td>₹${(invoice.amount || 0).toFixed(2)}</td>
+                    <td><span class="status-badge ${invoice.status === 'Paid' ? 'status-paid' : 'status-pending'}">${invoice.status}</span></td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // ==================== STOCK FUNCTIONS ====================
+        document.getElementById('stockForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const product = {
+                id: Date.now(),
+                productCode: document.getElementById('productCode').value,
+                productName: document.getElementById('productName').value,
+                noOfBoxes: parseInt(document.getElementById('noOfBoxes').value),
+                productType: document.getElementById('productType').value,
+                category: document.getElementById('category').value,
+                unitPrice: parseFloat(document.getElementById('unitPrice').value)
+            };
+
+            stockData.push(product);
+            localStorage.setItem('stockData', JSON.stringify(stockData));
+            filteredStockData = [...stockData];
+
+            this.reset();
+            renderStockTable();
+            checkLowStock();
+            alert('Stock added successfully!');
+        });
+
+        function searchStock() {
+            const searchTerm = document.getElementById('stockSearch').value.toLowerCase();
+
+            if (searchTerm.trim() === '') {
+                filteredStockData = [...stockData];
+            } else {
+                filteredStockData = stockData.filter(item =>
+                    item.productCode.toLowerCase().includes(searchTerm) ||
+                    item.productName.toLowerCase().includes(searchTerm) ||
+                    item.category.toLowerCase().includes(searchTerm) ||
+                    item.productType.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            renderStockTable();
+        }
+
+        function checkLowStock() {
+            const lowStockItems = stockData.filter(item => item.noOfBoxes <= LOW_STOCK_THRESHOLD);
+            const alert = document.getElementById('lowStockAlert');
+            const message = document.getElementById('lowStockMessage');
+
+            if (lowStockItems.length > 0) {
+                message.textContent = `${lowStockItems.length} product(s) have low stock: ${lowStockItems.map(i => i.productName).join(', ')}`;
+                alert.classList.add('show');
+            } else {
+                alert.classList.remove('show');
+            }
+        }
+
+        function renderStockTable() {
+            const container = document.getElementById('stockTableContainer');
+
+            if (filteredStockData.length === 0) {
+                container.innerHTML = '<div class="empty-message">No stock items found.</div>';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>Code</th><th>Product Name</th><th>Type</th><th>Category</th><th>Boxes</th><th>Price/Box</th><th>Actions</th></tr></thead><tbody>';
+
+            filteredStockData.forEach(item => {
+                const stockIndex = stockData.findIndex(s => s.id === item.id);
+                const isLowStock = item.noOfBoxes <= LOW_STOCK_THRESHOLD;
+                const rowStyle = isLowStock ? 'background: #ffe0e0;' : '';
+
+                html += `<tr style="${rowStyle}">
+                    <td>${item.productCode}</td>
+                    <td>${item.productName}${isLowStock ? ' ⚠️' : ''}</td>
+                    <td>${item.productType}</td>
+                    <td>${item.category}</td>
+                    <td>${item.noOfBoxes}</td>
+                    <td>₹${item.unitPrice.toFixed(2)}</td>
+                    <td class="action-buttons">
+                        <button class="btn-edit btn-small" onclick="editStock(${stockIndex})">Edit</button>
+                        <button class="btn-delete btn-small" onclick="deleteStock(${stockIndex})">Delete</button>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function editStock(index) {
+            editingStockIndex = index;
+            const item = stockData[index];
+
+            document.getElementById('editProductCode').value = item.productCode;
+            document.getElementById('editProductName').value = item.productName;
+            document.getElementById('editNoOfBoxes').value = item.noOfBoxes;
+            document.getElementById('editProductType').value = item.productType;
+            document.getElementById('editCategory').value = item.category;
+            document.getElementById('editUnitPrice').value = item.unitPrice;
+
+            document.getElementById('editStockModal').style.display = 'block';
+        }
+
+        document.getElementById('editStockForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            stockData[editingStockIndex] = {
+                id: stockData[editingStockIndex].id,
+                productCode: document.getElementById('editProductCode').value,
+                productName: document.getElementById('editProductName').value,
+                noOfBoxes: parseInt(document.getElementById('editNoOfBoxes').value),
+                productType: document.getElementById('editProductType').value,
+                category: document.getElementById('editCategory').value,
+                unitPrice: parseFloat(document.getElementById('editUnitPrice').value)
+            };
+
+            localStorage.setItem('stockData', JSON.stringify(stockData));
+            filteredStockData = [...stockData];
+            closeEditModal();
+            renderStockTable();
+            checkLowStock();
+            alert('Stock updated successfully!');
+        });
+
+        function closeEditModal() {
+            document.getElementById('editStockModal').style.display = 'none';
+            editingStockIndex = -1;
+        }
+
+        function deleteStock(index) {
+            if (confirm('Are you sure you want to delete this stock item?')) {
+                stockData.splice(index, 1);
+                localStorage.setItem('stockData', JSON.stringify(stockData));
+                filteredStockData = [...stockData];
+                renderStockTable();
+                checkLowStock();
+                alert('Stock deleted successfully!');
+            }
+        }
+
+        // ==================== INVOICE FUNCTIONS ====================
+        document.getElementById('invoiceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const invoice = {
+                id: Date.now(),
+                invoiceNo: document.getElementById('invoiceNo').value,
+                customerName: document.getElementById('invCustomerName').value,
+                customerPhone: document.getElementById('invCustomerPhone').value,
+                address: document.getElementById('invAddress').value,
+                date: document.getElementById('invDate').value,
+                vehicleNo: document.getElementById('vehicleNo').value,
+                amount: parseFloat(document.getElementById('invAmount').value),
+                status: 'Draft'
+            };
+
+            invoiceData.push(invoice);
+            localStorage.setItem('invoiceData', JSON.stringify(invoiceData));
+
+            this.reset();
+            document.getElementById('invDate').value = today;
+            renderInvoicesTable();
+            calculateSalesStats();
+            alert('Invoice created successfully!');
+        });
+
+        function renderInvoicesTable() {
+            const container = document.getElementById('invoicesTableContainer');
+
+            if (invoiceData.length === 0) {
+                container.innerHTML = '<div class="empty-message">No invoices yet.</div>';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>Invoice No.</th><th>Customer</th><th>Phone</th><th>Date</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+
+            invoiceData.forEach((invoice, index) => {
+                html += `<tr>
+                    <td>${invoice.invoiceNo}</td>
+                    <td>${invoice.customerName}</td>
+                    <td>${invoice.customerPhone}</td>
+                    <td>${new Date(invoice.date).toLocaleDateString()}</td>
+                    <td>₹${(invoice.amount || 0).toFixed(2)}</td>
+                    <td><span class="status-badge status-${invoice.status.toLowerCase()}">${invoice.status}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn-edit btn-small" onclick="editInvoice(${index})">Edit</button>
+                        <button class="btn-delete btn-small" onclick="deleteInvoice(${index})">Delete</button>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function editInvoice(index) {
+            editingInvoiceIndex = index;
+            const invoice = invoiceData[index];
+
+            document.getElementById('editInvoiceNo').value = invoice.invoiceNo;
+            document.getElementById('editInvCustomerName').value = invoice.customerName;
+            document.getElementById('editInvCustomerPhone').value = invoice.customerPhone;
+            document.getElementById('editInvAddress').value = invoice.address;
+            document.getElementById('editInvDate').value = invoice.date;
+            document.getElementById('editVehicleNo').value = invoice.vehicleNo || '';
+            document.getElementById('editInvAmount').value = invoice.amount || 0;
+            document.getElementById('editInvStatus').value = invoice.status;
+
+            document.getElementById('editInvoiceModal').style.display = 'block';
+        }
+
+        document.getElementById('editInvoiceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            invoiceData[editingInvoiceIndex] = {
+                ...invoiceData[editingInvoiceIndex],
+                customerName: document.getElementById('editInvCustomerName').value,
+                customerPhone: document.getElementById('editInvCustomerPhone').value,
+                address: document.getElementById('editInvAddress').value,
+                date: document.getElementById('editInvDate').value,
+                vehicleNo: document.getElementById('editVehicleNo').value,
+                amount: parseFloat(document.getElementById('editInvAmount').value),
+                status: document.getElementById('editInvStatus').value
+            };
+
+            localStorage.setItem('invoiceData', JSON.stringify(invoiceData));
+            closeInvoiceModal();
+            renderInvoicesTable();
+            calculateSalesStats();
+            alert('Invoice updated successfully!');
+        });
+
+        function closeInvoiceModal() {
+            document.getElementById('editInvoiceModal').style.display = 'none';
+            editingInvoiceIndex = -1;
+        }
+
+        function deleteInvoice(index) {
+            if (confirm('Are you sure you want to delete this invoice?')) {
+                invoiceData.splice(index, 1);
+                localStorage.setItem('invoiceData', JSON.stringify(invoiceData));
+                renderInvoicesTable();
+                calculateSalesStats();
+                alert('Invoice deleted successfully!');
+            }
+        }
+
+        // ==================== ATTENDANCE FUNCTIONS ====================
+        document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const attendance = {
+                id: Date.now(),
+                name: document.getElementById('staffName').value,
+                date: document.getElementById('attendanceDate').value,
+                status: document.getElementById('attendanceStatus').value
+            };
+
+            attendanceData.push(attendance);
+            localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+
+            this.reset();
+            document.getElementById('attendanceDate').value = today;
+            renderAttendanceTable();
+            alert('Attendance marked successfully!');
+        });
+
+        function renderAttendanceTable() {
+            const container = document.getElementById('attendanceTableContainer');
+
+            if (attendanceData.length === 0) {
+                container.innerHTML = '<div class="empty-message">No attendance records yet.</div>';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>Staff Name</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+
+            attendanceData.forEach((item, index) => {
+                const statusClass = item.status === 'Present' ? 'status-present' : item.status === 'Absent' ? 'status-absent' : 'status-pending';
+                html += `<tr>
+                    <td>${item.name}</td>
+                    <td>${new Date(item.date).toLocaleDateString()}</td>
+                    <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn-edit btn-small" onclick="editAttendance(${index})">Edit</button>
+                        <button class="btn-delete btn-small" onclick="deleteAttendance(${index})">Delete</button>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function editAttendance(index) {
+            editingAttendanceIndex = index;
+            const item = attendanceData[index];
+
+            document.getElementById('editStaffName').value = item.name;
+            document.getElementById('editAttendanceDate').value = item.date;
+            document.getElementById('editAttendanceStatus').value = item.status;
+
+            document.getElementById('editAttendanceModal').style.display = 'block';
+        }
+
+        document.getElementById('editAttendanceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            attendanceData[editingAttendanceIndex] = {
+                id: attendanceData[editingAttendanceIndex].id,
+                name: document.getElementById('editStaffName').value,
+                date: document.getElementById('editAttendanceDate').value,
+                status: document.getElementById('editAttendanceStatus').value
+            };
+
+            localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+            closeAttendanceModal();
+            renderAttendanceTable();
+            alert('Attendance updated successfully!');
+        });
+
+        function closeAttendanceModal() {
+            document.getElementById('editAttendanceModal').style.display = 'none';
+            editingAttendanceIndex = -1;
+        }
+
+        function deleteAttendance(index) {
+            if (confirm('Are you sure you want to delete this record?')) {
+                attendanceData.splice(index, 1);
+                localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+                renderAttendanceTable();
+                alert('Record deleted successfully!');
+            }
+        }
+
+        // ==================== EXPENSE FUNCTIONS ====================
+        document.getElementById('expenseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const expense = {
+                id: Date.now(),
+                name: document.getElementById('expenseName').value,
+                category: document.getElementById('expenseCategory').value,
+                amount: parseFloat(document.getElementById('expenseAmount').value),
+                date: document.getElementById('expenseDate').value,
+                description: document.getElementById('expenseDescription').value
+            };
+
+            expenseData.push(expense);
+            localStorage.setItem('expenseData', JSON.stringify(expenseData));
+
+            this.reset();
+            document.getElementById('expenseDate').value = today;
+            renderExpenseTable();
+            updateExpenseStats();
+            alert('Expense added successfully!');
+        });
+
+        function updateExpenseStats() {
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+
+            let totalExpenses = 0;
+            let monthlyExpenses = 0;
+
+            expenseData.forEach(expense => {
+                totalExpenses += expense.amount;
+
+                const expDate = new Date(expense.date);
+                if (expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear) {
+                    monthlyExpenses += expense.amount;
+                }
+            });
+
+            document.getElementById('totalExpenses').textContent = '₹' + totalExpenses.toFixed(2);
+            document.getElementById('monthlyExpenses').textContent = '₹' + monthlyExpenses.toFixed(2);
+        }
+
+        function renderExpenseTable() {
+            const container = document.getElementById('expenseTableContainer');
+
+            if (expenseData.length === 0) {
+                container.innerHTML = '<div class="empty-message">No expenses yet.</div>';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>Name</th><th>Category</th><th>Amount</th><th>Date</th><th>Description</th><th>Actions</th></tr></thead><tbody>';
+
+            expenseData.forEach((expense, index) => {
+                html += `<tr>
+                    <td>${expense.name}</td>
+                    <td>${expense.category}</td>
+                    <td>₹${expense.amount.toFixed(2)}</td>
+                    <td>${new Date(expense.date).toLocaleDateString()}</td>
+                    <td>${expense.description || '-'}</td>
+                    <td class="action-buttons">
+                        <button class="btn-edit btn-small" onclick="editExpense(${index})">Edit</button>
+                        <button class="btn-delete btn-small" onclick="deleteExpense(${index})">Delete</button>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function editExpense(index) {
+            editingExpenseIndex = index;
+            const expense = expenseData[index];
+
+            document.getElementById('editExpenseName').value = expense.name;
+            document.getElementById('editExpenseCategory').value = expense.category;
+            document.getElementById('editExpenseAmount').value = expense.amount;
+            document.getElementById('editExpenseDate').value = expense.date;
+            document.getElementById('editExpenseDescription').value = expense.description || '';
+
+            document.getElementById('editExpenseModal').style.display = 'block';
+        }
+
+        document.getElementById('editExpenseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            expenseData[editingExpenseIndex] = {
+                id: expenseData[editingExpenseIndex].id,
+                name: document.getElementById('editExpenseName').value,
+                category: document.getElementById('editExpenseCategory').value,
+                amount: parseFloat(document.getElementById('editExpenseAmount').value),
+                date: document.getElementById('editExpenseDate').value,
+                description: document.getElementById('editExpenseDescription').value
+            };
+
+            localStorage.setItem('expenseData', JSON.stringify(expenseData));
+            closeExpenseModal();
+            renderExpenseTable();
+            updateExpenseStats();
+            alert('Expense updated successfully!');
+        });
+
+        function closeExpenseModal() {
+            document.getElementById('editExpenseModal').style.display = 'none';
+            editingExpenseIndex = -1;
+        }
+
+        function deleteExpense(index) {
+            if (confirm('Are you sure you want to delete this expense?')) {
+                expenseData.splice(index, 1);
+                localStorage.setItem('expenseData', JSON.stringify(expenseData));
+                renderExpenseTable();
+                updateExpenseStats();
+                alert('Expense deleted successfully!');
+            }
+        }
+
+        // ==================== NOTES FUNCTIONS ====================
+        document.getElementById('noteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const note = {
+                id: Date.now(),
+                title: document.getElementById('noteTitle').value,
+                content: document.getElementById('noteContent').value,
+                date: new Date().toISOString()
+            };
+
+            notesData.push(note);
+            localStorage.setItem('notesData', JSON.stringify(notesData));
+
+            this.reset();
+            renderNotesContainer();
+            alert('Note saved successfully!');
+        });
+
+        function renderNotesContainer() {
+            const container = document.getElementById('notesContainer');
+
+            if (notesData.length === 0) {
+                container.innerHTML = '<div class="empty-message">No notes yet.</div>';
+                return;
+            }
+
+            let html = '<div class="notes-container">';
+
+            notesData.forEach((note, index) => {
+                const noteDate = new Date(note.date).toLocaleDateString();
+                html += `
+                    <div class="note-card">
+                        <h4>${note.title}</h4>
+                        <p>${note.content}</p>
+                        <div class="note-date">${noteDate}</div>
+                        <div class="action-buttons">
+                            <button class="btn-edit btn-small" onclick="editNote(${index})">Edit</button>
+                            <button class="btn-delete btn-small" onclick="deleteNote(${index})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function editNote(index) {
+            editingNoteIndex = index;
+            const note = notesData[index];
+
+            document.getElementById('editNoteTitle').value = note.title;
+            document.getElementById('editNoteContent').value = note.content;
+
+            document.getElementById('editNoteModal').style.display = 'block';
+        }
+
+        document.getElementById('editNoteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            notesData[editingNoteIndex] = {
+                id: notesData[editingNoteIndex].id,
+                title: document.getElementById('editNoteTitle').value,
+                content: document.getElementById('editNoteContent').value,
+                date: notesData[editingNoteIndex].date
+            };
+
+            localStorage.setItem('notesData', JSON.stringify(notesData));
+            closeNoteModal();
+            renderNotesContainer();
+            alert('Note updated successfully!');
+        });
+
+        function closeNoteModal() {
+            document.getElementById('editNoteModal').style.display = 'none';
+            editingNoteIndex = -1;
+        }
+
+        function deleteNote(index) {
+            if (confirm('Are you sure you want to delete this note?')) {
+                notesData.splice(index, 1);
+                localStorage.setItem('notesData', JSON.stringify(notesData));
+                renderNotesContainer();
+                alert('Note deleted successfully!');
+            }
+        }
+
+        // ==================== MODAL CLOSE ON OUTSIDE CLICK ====================
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // ==================== INITIALIZE ====================
+        renderStockTable();
+        renderInvoicesTable();
+        renderAttendanceTable();
+        renderExpenseTable();
+        renderNotesContainer();
+        calculateSalesStats();
+        updateExpenseStats();
+        checkLowStock();
+    </script>
+</body>
+</html>
